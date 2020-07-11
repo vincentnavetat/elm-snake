@@ -2,7 +2,7 @@ module View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Model exposing (Cell, Direction(..), Model, Msg(..), Status(..), mapSize)
+import Model exposing (Cell, Direction(..), Model, Msg(..), Status(..), mapSize, sameCell)
 
 
 drawCols : Model -> List (Html Msg)
@@ -27,12 +27,12 @@ drawCell model cell =
     let
         isSnake =
             List.member cell model.snake
+
+        isHead =
+            sameCell cell (model.snake |> List.head |> Maybe.withDefault { x = 1, y = 1 })
     in
-    div [ class "cell", classList [ ( "cell--snake", isSnake ) ] ]
-        [-- cell.x |> String.fromInt |> text
-         -- , text " - "
-         -- , cell.y |> String.fromInt |> text
-        ]
+    div [ class "cell", classList [ ( "cell--snake", isSnake ), ( "cell--snake-head", isHead ) ] ]
+        []
 
 
 viewGameStatus : Status -> Html Msg

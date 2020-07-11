@@ -2,7 +2,7 @@ module Main exposing (init, main, update)
 
 import Browser
 import Keyboard exposing (KeyboardConfig, subscription)
-import Model exposing (Cell, Direction(..), Model, Msg(..), Status(..), mapSize)
+import Model exposing (Cell, Direction(..), Model, Msg(..), Status(..), mapSize, sameCell)
 import Time
 import View exposing (view)
 
@@ -24,9 +24,52 @@ init _ =
     )
 
 
-cellIsInMap : Cell -> Bool
-cellIsInMap c =
-    c.x > 0 && c.x <= mapSize && c.y > 0 && c.y <= mapSize
+moveUp : Cell -> Cell
+moveUp c =
+    if c.y < 1 then
+        { c | y = mapSize }
+
+    else if c.y > mapSize then
+        { c | y = 1 }
+
+    else
+        { c | y = c.y - 1 }
+
+
+moveDown : Cell -> Cell
+moveDown c =
+    if c.y < 1 then
+        { c | y = mapSize }
+
+    else if c.y > mapSize then
+        { c | y = 1 }
+
+    else
+        { c | y = c.y + 1 }
+
+
+moveLeft : Cell -> Cell
+moveLeft c =
+    if c.x < 1 then
+        { c | x = mapSize }
+
+    else if c.x > mapSize then
+        { c | x = 1 }
+
+    else
+        { c | x = c.x - 1 }
+
+
+moveRight : Cell -> Cell
+moveRight c =
+    if c.x < 1 then
+        { c | x = mapSize }
+
+    else if c.x > mapSize then
+        { c | x = 1 }
+
+    else
+        { c | x = c.x + 1 }
 
 
 moveSnake : Model -> Model
@@ -35,16 +78,16 @@ moveSnake model =
         updateCells direction c =
             case direction of
                 Up ->
-                    { c | y = c.y - 1 }
+                    c |> moveUp
 
                 Right ->
-                    { c | x = c.x + 1 }
+                    c |> moveRight
 
                 Down ->
-                    { c | y = c.y + 1 }
+                    c |> moveDown
 
                 Left ->
-                    { c | x = c.x - 1 }
+                    c |> moveLeft
 
         snakeHead =
             List.head model.snake
@@ -53,18 +96,18 @@ moveSnake model =
         newHead =
             updateCells model.direction snakeHead
 
-        newSnake =
-            newHead :: List.take (List.length model.snake - 1) model.snake
+        newBody =
+            List.take (List.length model.snake - 1) model.snake
 
-        ( newStatus, snakeToReturn ) =
-            if List.all cellIsInMap newSnake then
-                ( OnGoing, newSnake )
+        newStatus =
+            if List.all (\c -> sameCell c newHead /= True) newBody then
+                OnGoing
 
             else
-                ( GameOver, model.snake )
+                GameOver
     in
     { model
-        | snake = snakeToReturn
+        | snake = newHead :: newBody
         , status = newStatus
     }
 
