@@ -40,7 +40,7 @@ type Msg
 
 init : Int -> ( Model, Cmd Msg )
 init _ =
-    ( { snake = [ { x = 1, y = 1 } ]
+    ( { snake = [ { x = 1, y = 1 }, { x = 2, y = 1 }, { x = 3, y = 1 } ]
       , direction = Right
       , status = OnGoing
       }
@@ -70,9 +70,15 @@ moveSnake model =
                 Left ->
                     { c | x = c.x - 1 }
 
+        snakeHead =
+            List.head model.snake
+                |> Maybe.withDefault { x = 1, y = 1 }
+
+        newHead =
+            updateCells model.direction snakeHead
+
         newSnake =
-            model.snake
-                |> List.map (updateCells model.direction)
+            newHead :: List.take (List.length model.snake - 1) model.snake
 
         ( newStatus, snakeToReturn ) =
             if List.all cellIsInMap newSnake then
@@ -81,7 +87,10 @@ moveSnake model =
             else
                 ( GameOver, model.snake )
     in
-    { model | snake = snakeToReturn, status = newStatus }
+    { model
+        | snake = snakeToReturn
+        , status = newStatus
+    }
 
 
 play : Model -> ( Model, Cmd Msg )
