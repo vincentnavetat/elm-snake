@@ -40,11 +40,8 @@ size =
 
 drawCols : Model -> List (Html Msg)
 drawCols model =
-    let
-        cols =
-            List.range 1 size
-    in
-    List.map (drawRow model) cols
+    List.range 1 size
+        |> List.map (drawRow model)
 
 
 drawRow : Model -> Int -> Html Msg
@@ -52,21 +49,22 @@ drawRow model y =
     let
         row =
             List.range 1 size
+                |> List.map (\x -> drawCell model { x = x, y = y })
     in
     div [ class "row" ]
-        (List.map (drawCell model y) row)
+        row
 
 
-drawCell : Model -> Int -> Int -> Html Msg
-drawCell model x y =
+drawCell : Model -> Cell -> Html Msg
+drawCell model cell =
     let
         isSnake =
-            List.member { x = x, y = y } model.snake
+            List.member cell model.snake
     in
     div [ class "cell", classList [ ( "cell--snake", isSnake ) ] ]
-        [ x |> String.fromInt |> text
+        [ cell.x |> String.fromInt |> text
         , text " - "
-        , y |> String.fromInt |> text
+        , cell.y |> String.fromInt |> text
         ]
 
 
@@ -83,7 +81,7 @@ main =
         , update = update
         , view =
             \m ->
-                { title = "Elm 0.19 starter"
+                { title = "Snake!"
                 , body = [ view m ]
                 }
         , subscriptions = \_ -> Sub.none
