@@ -1,41 +1,10 @@
-module Main exposing (Model, Msg(..), init, main, update, view)
+module Main exposing (init, main, update)
 
 import Browser
-import Html exposing (..)
-import Html.Attributes exposing (..)
 import Keyboard exposing (KeyboardConfig, subscription)
+import Model exposing (Cell, Direction(..), Model, Msg(..), Status(..), mapSize)
 import Time
-
-
-type Status
-    = OnGoing
-    | GameOver
-
-
-type Direction
-    = Up
-    | Right
-    | Down
-    | Left
-
-
-type alias Cell =
-    { x : Int
-    , y : Int
-    }
-
-
-type alias Model =
-    { snake : List Cell
-    , direction : Direction
-    , status : Status
-    }
-
-
-type Msg
-    = TimeTick Time.Posix
-    | ChangeDirection Direction
-    | NoOp
+import View exposing (view)
 
 
 init : Int -> ( Model, Cmd Msg )
@@ -50,7 +19,7 @@ init _ =
 
 cellIsInMap : Cell -> Bool
 cellIsInMap c =
-    c.x > 0 && c.x <= size && c.y > 0 && c.y <= size
+    c.x > 0 && c.x <= mapSize && c.y > 0 && c.y <= mapSize
 
 
 moveSnake : Model -> Model
@@ -114,62 +83,6 @@ update message model =
 
         NoOp ->
             ( model, Cmd.none )
-
-
-size : Int
-size =
-    10
-
-
-drawCols : Model -> List (Html Msg)
-drawCols model =
-    List.range 1 size
-        |> List.map (drawRow model)
-
-
-drawRow : Model -> Int -> Html Msg
-drawRow model y =
-    let
-        row =
-            List.range 1 size
-                |> List.map (\x -> drawCell model { x = x, y = y })
-    in
-    div [ class "row" ]
-        row
-
-
-drawCell : Model -> Cell -> Html Msg
-drawCell model cell =
-    let
-        isSnake =
-            List.member cell model.snake
-    in
-    div [ class "cell", classList [ ( "cell--snake", isSnake ) ] ]
-        [ cell.x |> String.fromInt |> text
-        , text " - "
-        , cell.y |> String.fromInt |> text
-        ]
-
-
-viewGameStatus : Status -> Html Msg
-viewGameStatus s =
-    if s == GameOver then
-        text "Game over looooser!"
-
-    else
-        text ""
-
-
-view : Model -> Html Msg
-view model =
-    node "main"
-        []
-        [ div [ class "map" ]
-            (drawCols model)
-        , div []
-            [ viewGameStatus model.status
-            ]
-        ]
 
 
 keyboardConfig : KeyboardConfig Msg
