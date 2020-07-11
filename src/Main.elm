@@ -2,6 +2,7 @@ module Main exposing (init, main, update)
 
 import Browser
 import Keyboard exposing (KeyboardConfig, subscription)
+import List.Extra exposing (remove)
 import Model exposing (Cell, Direction(..), Model, Msg(..), Status(..), mapSize, sameCell)
 import Movement exposing (moveCell)
 import Random
@@ -28,7 +29,7 @@ init _ =
     )
 
 
-moveSnake : Model -> ( List Cell, Status )
+moveSnake : Model -> Model
 moveSnake model =
     let
         newHead =
@@ -36,14 +37,22 @@ moveSnake model =
                 |> Maybe.withDefault { x = 1, y = 1 }
                 |> moveCell model.direction
 
-        newBody =
-            List.take (List.length model.snake - 1) model.snake
+        ( newBody, newBonuses ) =
+            if List.any (\c -> sameCell c newHead) model.bonuses then
+                ( model.snake, List.Extra.remove newHead model.bonuses )
+
+            else
+                ( List.take (List.length model.snake - 1) model.snake, model.bonuses )
     in
     if List.all (\c -> sameCell c newHead /= True) newBody then
-        ( newHead :: newBody, OnGoing )
+        { model
+            | snake = newHead :: newBody
+            , status = OnGoing
+            , bonuses = newBonuses
+        }
 
     else
-        ( model.snake, GameOver )
+        { model | status = GameOver }
 
 
 cellGenerator : Random.Generator ( Int, Int )
@@ -65,16 +74,14 @@ play model =
     case model.status of
         OnGoing ->
             let
-                ( newSnake, newStatus ) =
-                    moveSnake model
+                newModel =
+                    model |> moveSnake
 
                 ( cmd, newTimePeriod ) =
                     generateNewBonuses model
             in
-            ( { model
-                | snake = newSnake
-                , status = newStatus
-                , timePeriod = newTimePeriod
+            ( { newModel
+                | timePeriod = newTimePeriod
               }
             , cmd
             )
