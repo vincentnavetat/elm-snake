@@ -1,8 +1,9 @@
 module View exposing (view)
 
+import Direction exposing (Direction(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Model exposing (Cell, Direction(..), Model, Msg(..), Status(..), mapSize, sameCell)
+import Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
 
 
 drawCols : Model -> List (Html Msg)

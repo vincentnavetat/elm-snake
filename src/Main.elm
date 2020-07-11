@@ -1,9 +1,10 @@
 module Main exposing (init, main, update)
 
 import Browser
+import Direction exposing (Direction(..), oppositeDirections)
 import Keyboard exposing (KeyboardConfig, subscription)
 import List.Extra exposing (remove)
-import Model exposing (Cell, Direction(..), Model, Msg(..), Status(..), mapSize, sameCell)
+import Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
 import Movement exposing (moveCell)
 import Random
 import Time
@@ -55,6 +56,15 @@ moveSnake model =
         { model | status = GameOver }
 
 
+changeDirection : Model -> Direction -> ( Model, Cmd Msg )
+changeDirection model direction =
+    if oppositeDirections direction model.direction then
+        ( model, Cmd.none )
+
+    else
+        ( { model | direction = direction }, Cmd.none )
+
+
 cellGenerator : Random.Generator ( Int, Int )
 cellGenerator =
     Random.pair (Random.int 1 mapSize) (Random.int 1 mapSize)
@@ -90,21 +100,20 @@ play model =
             ( model, Cmd.none )
 
 
-oppositeDirections : Direction -> Direction -> Bool
-oppositeDirections d1 d2 =
-    (d1 == Up && d2 == Down)
-        || (d1 == Down && d2 == Up)
-        || (d1 == Left && d2 == Right)
-        || (d1 == Right && d2 == Left)
+spawnNewBonus : Model -> Cell -> ( Model, Cmd Msg )
+spawnNewBonus model c =
+    let
+        newBonuses =
+            c :: model.bonuses
 
+        remainingBonuses =
+            if List.length newBonuses > 3 then
+                List.take 3 newBonuses
 
-changeDirection : Model -> Direction -> ( Model, Cmd Msg )
-changeDirection model direction =
-    if oppositeDirections direction model.direction then
-        ( model, Cmd.none )
-
-    else
-        ( { model | direction = direction }, Cmd.none )
+            else
+                newBonuses
+    in
+    ( { model | bonuses = remainingBonuses }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -117,18 +126,7 @@ update message model =
             changeDirection model direction
 
         NewBonus ( x, y ) ->
-            let
-                newBonuses =
-                    { x = x, y = y } :: model.bonuses
-
-                remainingBonuses =
-                    if List.length newBonuses > 3 then
-                        List.take 3 newBonuses
-
-                    else
-                        newBonuses
-            in
-            ( { model | bonuses = remainingBonuses }, Cmd.none )
+            spawnNewBonus model { x = x, y = y }
 
         NoOp ->
             ( model, Cmd.none )

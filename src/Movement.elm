@@ -1,6 +1,7 @@
 module Movement exposing (moveCell)
 
-import Model exposing (Cell, Direction(..), mapSize)
+import Direction exposing (Direction(..))
+import Model exposing (Cell, mapSize)
 
 
 moveUp : Cell -> Cell

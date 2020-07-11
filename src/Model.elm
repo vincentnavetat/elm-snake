@@ -1,5 +1,6 @@
-module Model exposing (Cell, Direction(..), Model, Msg(..), Status(..), mapSize, sameCell)
+module Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
 
+import Direction exposing (Direction(..))
 import Time
 
 
@@ -11,13 +12,6 @@ mapSize =
 type Status
     = OnGoing
     | GameOver
-
-
-type Direction
-    = Up
-    | Right
-    | Down
-    | Left
 
 
 type alias Cell =
