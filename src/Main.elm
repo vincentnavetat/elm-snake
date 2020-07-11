@@ -24,6 +24,10 @@ type alias Model =
     }
 
 
+type Msg
+    = TimeTick Time.Posix
+
+
 init : Int -> ( Model, Cmd Msg )
 init _ =
     ( { snake = [ { x = 1, y = 1 } ]
@@ -33,26 +37,40 @@ init _ =
     )
 
 
-type Msg
-    = TimeTick Time.Posix
-
-
-moveSnake : Model -> List Cell
+moveSnake : Model -> Model
 moveSnake model =
-    List.map (\c -> { c | x = c.x + 1 }) model.snake
+    let
+        updateCells c =
+            { c | x = c.x + 1 }
+
+        newSnake =
+            List.map updateCells model.snake
+
+        ( newStatus, snakeToReturn ) =
+            if List.any (\c -> c.x > size) newSnake then
+                ( GameOver, model.snake )
+
+            else
+                ( OnGoing, newSnake )
+    in
+    { model | snake = snakeToReturn, status = newStatus }
+
+
+play : Model -> ( Model, Cmd Msg )
+play model =
+    case model.status of
+        OnGoing ->
+            ( model |> moveSnake, Cmd.none )
+
+        GameOver ->
+            ( model, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         TimeTick _ ->
-            let
-                newSnake =
-                    moveSnake model
-            in
-            ( { model | snake = newSnake }
-            , Cmd.none
-            )
+            play model
 
 
 size : Int
@@ -90,10 +108,25 @@ drawCell model cell =
         ]
 
 
+viewGameStatus : Status -> Html Msg
+viewGameStatus s =
+    if s == GameOver then
+        text "Game over looooser!"
+
+    else
+        text ""
+
+
 view : Model -> Html Msg
 view model =
-    div [ class "map" ]
-        (drawCols model)
+    node "main"
+        []
+        [ div [ class "map" ]
+            (drawCols model)
+        , div []
+            [ viewGameStatus model.status
+            ]
+        ]
 
 
 subscriptions : Model -> Sub Msg
