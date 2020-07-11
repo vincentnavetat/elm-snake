@@ -5,7 +5,7 @@ import Time
 
 mapSize : Int
 mapSize =
-    10
+    20
 
 
 type Status

@@ -29,9 +29,9 @@ drawCell model cell =
             List.member cell model.snake
     in
     div [ class "cell", classList [ ( "cell--snake", isSnake ) ] ]
-        [ cell.x |> String.fromInt |> text
-        , text " - "
-        , cell.y |> String.fromInt |> text
+        [-- cell.x |> String.fromInt |> text
+         -- , text " - "
+         -- , cell.y |> String.fromInt |> text
         ]
 
 

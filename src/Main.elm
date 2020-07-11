@@ -7,9 +7,16 @@ import Time
 import View exposing (view)
 
 
+initSnake : Int -> List Cell
+initSnake size =
+    List.range 1 size
+        |> List.map (\x -> { x = x, y = 1 })
+        |> List.reverse
+
+
 init : Int -> ( Model, Cmd Msg )
 init _ =
-    ( { snake = [ { x = 1, y = 1 }, { x = 2, y = 1 }, { x = 3, y = 1 } ]
+    ( { snake = initSnake 10
       , direction = Right
       , status = OnGoing
       }

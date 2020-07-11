@@ -1,12 +1,13 @@
 body {
-  background-color: #fafafa;
+  background-color: #eee;
 }
 
 .map {
-  display: flex;
+  background-color: white;
+  display: inline-flex;
   flex-wrap: wrap;
-  height: 500px;
-  width: 500px;
+  flex-direction: column;
+  flex-grow: 0;
 }
 
 .row {
@@ -15,8 +16,8 @@ body {
 
 .cell {
   display: inline-flex;
-  height: 50px;
-  width: 50px;
+  height: 20px;
+  width: 20px;
 }
 
 .cell--snake {
