@@ -110,14 +110,31 @@ play model =
             ( model, Cmd.none )
 
 
+oppositeDirections : Direction -> Direction -> Bool
+oppositeDirections d1 d2 =
+    (d1 == Up && d2 == Down)
+        || (d1 == Down && d2 == Up)
+        || (d1 == Left && d2 == Right)
+        || (d1 == Right && d2 == Left)
+
+
+changeDirection : Model -> Direction -> ( Model, Cmd Msg )
+changeDirection model direction =
+    if oppositeDirections direction model.direction then
+        ( model, Cmd.none )
+
+    else
+        ( { model | direction = direction }, Cmd.none )
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
         TimeTick _ ->
             play model
 
-        ChangeDirection d ->
-            ( { model | direction = d }, Cmd.none )
+        ChangeDirection direction ->
+            changeDirection model direction
 
         NoOp ->
             ( model, Cmd.none )
