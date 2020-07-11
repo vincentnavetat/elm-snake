@@ -35,10 +35,13 @@ type alias Model =
     { snake : List Cell
     , direction : Direction
     , status : Status
+    , timePeriod : Int
+    , bonuses : List Cell
     }
 
 
 type Msg
     = TimeTick Time.Posix
     | ChangeDirection Direction
+    | NewBonus ( Int, Int )
     | NoOp

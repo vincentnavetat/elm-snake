@@ -30,8 +30,18 @@ drawCell model cell =
 
         isHead =
             sameCell cell (model.snake |> List.head |> Maybe.withDefault { x = 1, y = 1 })
+
+        isBonus =
+            List.member cell model.bonuses
     in
-    div [ class "cell", classList [ ( "cell--snake", isSnake ), ( "cell--snake-head", isHead ) ] ]
+    div
+        [ class "cell"
+        , classList
+            [ ( "cell--snake", isSnake )
+            , ( "cell--snake-head", isHead )
+            , ( "cell--bonus", isBonus )
+            ]
+        ]
         []
 
 
