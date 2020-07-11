@@ -3,8 +3,20 @@ module Main exposing (Model, Msg(..), init, main, update, view)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Task
+import Keyboard exposing (KeyboardConfig, subscription)
 import Time
+
+
+type Status
+    = OnGoing
+    | GameOver
+
+
+type Direction
+    = Up
+    | Right
+    | Down
+    | Left
 
 
 type alias Cell =
@@ -13,45 +25,61 @@ type alias Cell =
     }
 
 
-type Status
-    = OnGoing
-    | GameOver
-
-
 type alias Model =
     { snake : List Cell
+    , direction : Direction
     , status : Status
     }
 
 
 type Msg
     = TimeTick Time.Posix
+    | ChangeDirection Direction
+    | NoOp
 
 
 init : Int -> ( Model, Cmd Msg )
 init _ =
     ( { snake = [ { x = 1, y = 1 } ]
+      , direction = Right
       , status = OnGoing
       }
     , Cmd.none
     )
 
 
+cellIsInMap : Cell -> Bool
+cellIsInMap c =
+    c.x > 0 && c.x <= size && c.y > 0 && c.y <= size
+
+
 moveSnake : Model -> Model
 moveSnake model =
     let
-        updateCells c =
-            { c | x = c.x + 1 }
+        updateCells direction c =
+            case direction of
+                Up ->
+                    { c | y = c.y - 1 }
+
+                Right ->
+                    { c | x = c.x + 1 }
+
+                Down ->
+                    { c | y = c.y + 1 }
+
+                Left ->
+                    { c | x = c.x - 1 }
 
         newSnake =
-            List.map updateCells model.snake
+            model.snake
+                |> List.map (updateCells model.direction)
 
         ( newStatus, snakeToReturn ) =
-            if List.any (\c -> c.x > size) newSnake then
-                ( GameOver, model.snake )
+            if List.all cellIsInMap newSnake then
+                ( OnGoing, newSnake )
 
             else
-                ( OnGoing, newSnake )
+                ( GameOver, model.snake )
     in
     { model | snake = snakeToReturn, status = newStatus }
 
@@ -71,6 +99,12 @@ update message model =
     case message of
         TimeTick _ ->
             play model
+
+        ChangeDirection d ->
+            ( { model | direction = d }, Cmd.none )
+
+        NoOp ->
+            ( model, Cmd.none )
 
 
 size : Int
@@ -129,9 +163,22 @@ view model =
         ]
 
 
+keyboardConfig : KeyboardConfig Msg
+keyboardConfig =
+    { up = ChangeDirection Up
+    , right = ChangeDirection Right
+    , down = ChangeDirection Down
+    , left = ChangeDirection Left
+    , noop = NoOp
+    }
+
+
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Time.every 1000 TimeTick
+    Sub.batch
+        [ subscription keyboardConfig
+        , Time.every 200 TimeTick
+        ]
 
 
 main : Program Int Model Msg
