@@ -26,11 +26,8 @@ init _ =
 
 moveUp : Cell -> Cell
 moveUp c =
-    if c.y < 1 then
+    if c.y <= 1 then
         { c | y = mapSize }
-
-    else if c.y > mapSize then
-        { c | y = 1 }
 
     else
         { c | y = c.y - 1 }
@@ -38,10 +35,7 @@ moveUp c =
 
 moveDown : Cell -> Cell
 moveDown c =
-    if c.y < 1 then
-        { c | y = mapSize }
-
-    else if c.y > mapSize then
+    if c.y >= mapSize then
         { c | y = 1 }
 
     else
@@ -50,11 +44,8 @@ moveDown c =
 
 moveLeft : Cell -> Cell
 moveLeft c =
-    if c.x < 1 then
+    if c.x <= 1 then
         { c | x = mapSize }
-
-    else if c.x > mapSize then
-        { c | x = 1 }
 
     else
         { c | x = c.x - 1 }
@@ -62,10 +53,7 @@ moveLeft c =
 
 moveRight : Cell -> Cell
 moveRight c =
-    if c.x < 1 then
-        { c | x = mapSize }
-
-    else if c.x > mapSize then
+    if c.x >= mapSize then
         { c | x = 1 }
 
     else
