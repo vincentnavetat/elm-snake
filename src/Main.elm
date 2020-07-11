@@ -60,42 +60,42 @@ moveRight c =
         { c | x = c.x + 1 }
 
 
+moveCell : Direction -> Cell -> Cell
+moveCell direction c =
+    case direction of
+        Up ->
+            c |> moveUp
+
+        Right ->
+            c |> moveRight
+
+        Down ->
+            c |> moveDown
+
+        Left ->
+            c |> moveLeft
+
+
 moveSnake : Model -> Model
 moveSnake model =
     let
-        updateCells direction c =
-            case direction of
-                Up ->
-                    c |> moveUp
-
-                Right ->
-                    c |> moveRight
-
-                Down ->
-                    c |> moveDown
-
-                Left ->
-                    c |> moveLeft
-
-        snakeHead =
+        newHead =
             List.head model.snake
                 |> Maybe.withDefault { x = 1, y = 1 }
-
-        newHead =
-            updateCells model.direction snakeHead
+                |> moveCell model.direction
 
         newBody =
             List.take (List.length model.snake - 1) model.snake
 
-        newStatus =
+        ( newSnake, newStatus ) =
             if List.all (\c -> sameCell c newHead /= True) newBody then
-                OnGoing
+                ( newHead :: newBody, OnGoing )
 
             else
-                GameOver
+                ( model.snake, GameOver )
     in
     { model
-        | snake = newHead :: newBody
+        | snake = newSnake
         , status = newStatus
     }
 
