@@ -3,7 +3,8 @@ module Main exposing (Model, Msg(..), init, main, update, view)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Task
+import Time
 
 
 type alias Cell =
@@ -12,25 +13,46 @@ type alias Cell =
     }
 
 
+type Status
+    = OnGoing
+    | GameOver
+
+
 type alias Model =
     { snake : List Cell
+    , status : Status
     }
 
 
 init : Int -> ( Model, Cmd Msg )
 init _ =
-    ( { snake = [ { x = 1, y = 1 } ] }, Cmd.none )
+    ( { snake = [ { x = 1, y = 1 } ]
+      , status = OnGoing
+      }
+    , Cmd.none
+    )
 
 
 type Msg
-    = NoOp
+    = TimeTick Time.Posix
+
+
+moveSnake : Model -> List Cell
+moveSnake model =
+    List.map (\c -> { c | x = c.x + 1 }) model.snake
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        NoOp ->
-            ( model, Cmd.none )
+        TimeTick _ ->
+            let
+                newSnake =
+                    moveSnake model
+            in
+            ( { model | snake = newSnake }
+            , Cmd.none
+            )
 
 
 size : Int
@@ -74,6 +96,11 @@ view model =
         (drawCols model)
 
 
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Time.every 1000 TimeTick
+
+
 main : Program Int Model Msg
 main =
     Browser.document
@@ -84,5 +111,5 @@ main =
                 { title = "Snake!"
                 , body = [ view m ]
                 }
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         }
