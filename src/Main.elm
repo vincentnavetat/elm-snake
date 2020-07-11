@@ -113,8 +113,15 @@ update message model =
             let
                 newBonuses =
                     { x = x, y = y } :: model.bonuses
+
+                remainingBonuses =
+                    if List.length newBonuses > 3 then
+                        List.take 3 newBonuses
+
+                    else
+                        newBonuses
             in
-            ( { model | bonuses = newBonuses }, Cmd.none )
+            ( { model | bonuses = remainingBonuses }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
