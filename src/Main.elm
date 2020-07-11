@@ -6,15 +6,20 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
 
+type alias Cell =
+    { x : Int
+    , y : Int
+    }
+
+
 type alias Model =
-    { counter : Int
-    , serverMessage : String
+    { snake : List Cell
     }
 
 
 init : Int -> ( Model, Cmd Msg )
-init flags =
-    ( { counter = flags, serverMessage = "" }, Cmd.none )
+init _ =
+    ( { snake = [ { x = 1, y = 1 } ] }, Cmd.none )
 
 
 type Msg
@@ -28,11 +33,47 @@ update message model =
             ( model, Cmd.none )
 
 
+size : Int
+size =
+    10
+
+
+drawCols : Model -> List (Html Msg)
+drawCols model =
+    let
+        cols =
+            List.range 1 size
+    in
+    List.map (drawRow model) cols
+
+
+drawRow : Model -> Int -> Html Msg
+drawRow model y =
+    let
+        row =
+            List.range 1 size
+    in
+    div [ class "row" ]
+        (List.map (drawCell model y) row)
+
+
+drawCell : Model -> Int -> Int -> Html Msg
+drawCell model x y =
+    let
+        isSnake =
+            List.member { x = x, y = y } model.snake
+    in
+    div [ class "cell", classList [ ( "cell--snake", isSnake ) ] ]
+        [ x |> String.fromInt |> text
+        , text " - "
+        , y |> String.fromInt |> text
+        ]
+
+
 view : Model -> Html Msg
 view model =
-    div []
-        [ text "hey"
-        ]
+    div [ class "map" ]
+        (drawCols model)
 
 
 main : Program Int Model Msg
