@@ -102,18 +102,7 @@ play model =
 
 spawnNewBonus : Model -> Cell -> ( Model, Cmd Msg )
 spawnNewBonus model c =
-    let
-        newBonuses =
-            c :: model.bonuses
-
-        remainingBonuses =
-            if List.length newBonuses > 3 then
-                List.take 3 newBonuses
-
-            else
-                newBonuses
-    in
-    ( { model | bonuses = remainingBonuses }, Cmd.none )
+    ( { model | bonuses = c :: model.bonuses |> List.take 3 }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
