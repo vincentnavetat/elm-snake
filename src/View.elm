@@ -55,6 +55,11 @@ viewGameStatus s =
         text ""
 
 
+viewScore : Int -> Html Msg
+viewScore s =
+    s |> String.fromInt |> text
+
+
 view : Model -> Html Msg
 view model =
     node "main"
@@ -63,5 +68,6 @@ view model =
             (drawCols model)
         , div []
             [ viewGameStatus model.status
+            , viewScore model.score
             ]
         ]

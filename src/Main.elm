@@ -25,9 +25,36 @@ init _ =
       , status = OnGoing
       , timePeriod = 0
       , bonuses = []
+      , score = 0
       }
     , Cmd.none
     )
+
+
+snakeHead : List Cell -> Cell
+snakeHead snake =
+    List.head snake
+        |> Maybe.withDefault { x = 1, y = 1 }
+
+
+snakeBody : List Cell -> List Cell
+snakeBody snake =
+    snake
+        |> List.reverse
+        |> List.take (List.length snake - 1)
+        |> List.reverse
+
+
+snakeIsAlive : List Cell -> Bool
+snakeIsAlive snake =
+    let
+        head =
+            snakeHead snake
+
+        body =
+            snakeBody snake
+    in
+    List.all (\c -> sameCell c head /= True) body
 
 
 moveSnake : Model -> Model
@@ -38,18 +65,22 @@ moveSnake model =
                 |> Maybe.withDefault { x = 1, y = 1 }
                 |> moveCell model.direction
 
-        ( newBody, newBonuses ) =
+        newModel =
             if List.any (\c -> sameCell c newHead) model.bonuses then
-                ( model.snake, List.Extra.remove newHead model.bonuses )
+                { model
+                    | snake = newHead :: model.snake
+                    , bonuses = List.Extra.remove newHead model.bonuses
+                    , score = model.score + 1
+                }
 
             else
-                ( List.take (List.length model.snake - 1) model.snake, model.bonuses )
+                { model
+                    | snake = newHead :: List.take (List.length model.snake - 1) model.snake
+                }
     in
-    if List.all (\c -> sameCell c newHead /= True) newBody then
-        { model
-            | snake = newHead :: newBody
-            , status = OnGoing
-            , bonuses = newBonuses
+    if snakeIsAlive newModel.snake then
+        { newModel
+            | status = OnGoing
         }
 
     else

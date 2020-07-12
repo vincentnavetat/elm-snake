@@ -31,6 +31,7 @@ type alias Model =
     , status : Status
     , timePeriod : Int
     , bonuses : List Cell
+    , score : Int
     }
 
 
