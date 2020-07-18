@@ -49,7 +49,9 @@ drawCell model cell =
 viewGameStatus : Status -> Html Msg
 viewGameStatus s =
     if s == GameOver then
-        text "Game over looooser!"
+        div [ class "game__status-wrapper" ]
+            [ div [ class "game__status" ] [ text "Game over looooser!" ]
+            ]
 
     else
         text ""
@@ -57,17 +59,20 @@ viewGameStatus s =
 
 viewScore : Int -> Html Msg
 viewScore s =
-    s |> String.fromInt |> text
+    span [ class "game__score" ]
+        [ text "Score: "
+        , strong []
+            [ s |> String.fromInt |> text
+            ]
+        ]
 
 
 view : Model -> Html Msg
 view model =
     node "main"
-        []
+        [ class "game" ]
         [ div [ class "map" ]
             (drawCols model)
-        , div []
-            [ viewGameStatus model.status
-            , viewScore model.score
-            ]
+        , viewGameStatus model.status
+        , viewScore model.score
         ]
