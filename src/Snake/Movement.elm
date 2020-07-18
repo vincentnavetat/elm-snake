@@ -1,7 +1,7 @@
-module Movement exposing (moveCell)
+module Snake.Movement exposing (moveCell)
 
-import Direction exposing (Direction(..))
-import Model exposing (Cell, mapSize)
+import Snake.Direction exposing (Direction(..))
+import Snake.Model exposing (Cell, mapSize)
 
 
 moveUp : Cell -> Cell

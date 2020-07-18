@@ -1,14 +1,14 @@
-module Main exposing (init, main, update)
+module Snake.Main exposing (init, main, update)
 
 import Browser
-import Direction exposing (Direction(..), oppositeDirections)
-import Keyboard exposing (KeyboardConfig, subscription)
 import List.Extra exposing (remove)
-import Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
-import Movement exposing (moveCell)
 import Random
+import Snake.Direction exposing (Direction(..), oppositeDirections)
+import Snake.Keyboard exposing (KeyboardConfig, subscription)
+import Snake.Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
+import Snake.Movement exposing (moveCell)
+import Snake.View exposing (view)
 import Time
-import View exposing (view)
 
 
 initSnake : Int -> List Cell

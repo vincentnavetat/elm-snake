@@ -1,9 +1,9 @@
-module View exposing (view)
+module Snake.View exposing (view)
 
-import Direction exposing (Direction(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
+import Snake.Direction exposing (Direction(..))
+import Snake.Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
 
 
 drawCols : Model -> List (Html Msg)

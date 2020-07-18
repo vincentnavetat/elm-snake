@@ -1,4 +1,4 @@
-module Keyboard exposing (KeyboardConfig, subscription)
+module Snake.Keyboard exposing (KeyboardConfig, subscription)
 
 import Browser.Events exposing (onKeyDown)
 import Json.Decode as Decode

@@ -1,4 +1,4 @@
-module Direction exposing (Direction(..), oppositeDirections)
+module Snake.Direction exposing (Direction(..), oppositeDirections)
 
 
 type Direction

@@ -2,5 +2,5 @@
 
 require("./styles.scss");
 
-const {Elm} = require('./Main');
-Elm.Main.init({flags: 6});
+const {Elm} = require('./Snake/Main');
+Elm.Snake.Main.init({flags: 6});

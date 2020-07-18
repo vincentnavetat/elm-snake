@@ -1,6 +1,6 @@
-module Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
+module Snake.Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
 
-import Direction exposing (Direction(..))
+import Snake.Direction exposing (Direction(..))
 import Time
 
 
