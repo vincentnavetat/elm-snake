@@ -3,7 +3,7 @@ module Snake.GamePlay exposing (play, spawnNewItem)
 import List.Extra exposing (find, remove)
 import Random
 import Snake.Cell exposing (Cell, sameCell)
-import Snake.Model exposing (ItemType(..), Model, Msg(..), Status(..))
+import Snake.Model exposing (Item, ItemType(..), Model, Msg(..), Status(..))
 import Snake.Movement exposing (moveCell)
 import Snake.Snake exposing (snakeIsAlive)
 
@@ -15,7 +15,7 @@ spawnNewItem model cell =
             model.config
 
         newType =
-            if modBy 2 cell.x == 0 then
+            if modBy 3 cell.x == 0 then
                 Penalty
 
             else
@@ -34,31 +34,37 @@ spawnNewItem model cell =
         ( model, newItemCmd model )
 
 
-snakeEatsItem : Cell -> Model -> Model
-snakeEatsItem newHead model =
+updateSnake : Cell -> Model -> Model
+updateSnake newHead model =
     let
         eatenItem =
             find (\c -> sameCell c.cell newHead) model.items
-
-        newItems =
-            case eatenItem of
-                Just b ->
-                    remove b model.items
-
-                Nothing ->
-                    model.items
     in
-    if List.any (\c -> sameCell c.cell newHead) model.items then
-        { model
-            | snake = newHead :: model.snake
-            , items = newItems
-            , score = model.score + 1
-        }
+    case eatenItem of
+        Just i ->
+            { model | snake = newHead :: model.snake }
+                |> snakeEats i
 
-    else
-        { model
-            | snake = newHead :: List.take (List.length model.snake - 1) model.snake
-        }
+        Nothing ->
+            { model
+                | snake = newHead :: List.take (List.length model.snake - 1) model.snake
+            }
+
+
+snakeEats : Item -> Model -> Model
+snakeEats item model =
+    case item.type_ of
+        Bonus ->
+            { model
+                | items = remove item model.items
+                , score = model.score + 1
+            }
+
+        Penalty ->
+            { model
+                | items = remove item model.items
+                , score = model.score - 3
+            }
 
 
 cellGenerator : Int -> Random.Generator ( Int, Int )
@@ -97,7 +103,7 @@ moveSnake model =
 
         newModel =
             model
-                |> snakeEatsItem newHead
+                |> updateSnake newHead
     in
     if snakeIsAlive newModel.snake then
         { newModel
