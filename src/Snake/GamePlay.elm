@@ -8,12 +8,19 @@ import Snake.Movement exposing (moveCell)
 
 
 spawnNewBonus : Model -> Cell -> ( Model, Cmd Msg )
-spawnNewBonus model c =
+spawnNewBonus model bonus =
     let
         config =
             model.config
+
+        bonusIsNotOnSnake =
+            List.all (\c -> sameCell c bonus /= True) model.snake
     in
-    ( { model | bonuses = c :: model.bonuses |> List.take config.maxNumberOfBonuses }, Cmd.none )
+    if bonusIsNotOnSnake then
+        ( { model | bonuses = bonus :: model.bonuses |> List.take config.maxNumberOfBonuses }, Cmd.none )
+
+    else
+        ( model, newBonusCmd model )
 
 
 snakeHead : List Cell -> Cell
@@ -67,14 +74,19 @@ cellGenerator mapSize =
     Random.pair (Random.int 1 mapSize) (Random.int 1 mapSize)
 
 
-generateNewBonuses : Model -> ( Cmd Msg, Int )
-generateNewBonuses model =
+newBonusCmd : Model -> Cmd Msg
+newBonusCmd model =
     let
         config =
             model.config
     in
+    Random.generate NewBonus (cellGenerator config.mapSize)
+
+
+generateNewBonuses : Model -> ( Cmd Msg, Int )
+generateNewBonuses model =
     if model.timePeriod == 20 then
-        ( Random.generate NewBonus (cellGenerator config.mapSize), 0 )
+        ( newBonusCmd model, 0 )
 
     else
         ( Cmd.none, model.timePeriod + 1 )
