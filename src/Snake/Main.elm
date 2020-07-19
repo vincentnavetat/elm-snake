@@ -21,7 +21,7 @@ initSnake size =
 
 init : Int -> ( Model, Cmd Msg )
 init _ =
-    ( { config = { mapSize = 20 }
+    ( { config = { mapSize = 20, speed = 200 }
       , snake = initSnake 10
       , direction = Right
       , status = OnGoing
@@ -59,6 +59,26 @@ snakeIsAlive snake =
     List.all (\c -> sameCell c head /= True) body
 
 
+snakeEatsBonus : Cell -> Model -> Model
+snakeEatsBonus newHead model =
+    let
+        config =
+            model.config
+    in
+    if List.any (\c -> sameCell c newHead) model.bonuses then
+        { model
+            | snake = newHead :: model.snake
+            , bonuses = List.Extra.remove newHead model.bonuses
+            , score = model.score + 1
+            , config = { config | speed = config.speed - 10 }
+        }
+
+    else
+        { model
+            | snake = newHead :: List.take (List.length model.snake - 1) model.snake
+        }
+
+
 moveSnake : Model -> Model
 moveSnake model =
     let
@@ -71,17 +91,8 @@ moveSnake model =
                 |> moveCell model.direction config.mapSize
 
         newModel =
-            if List.any (\c -> sameCell c newHead) model.bonuses then
-                { model
-                    | snake = newHead :: model.snake
-                    , bonuses = List.Extra.remove newHead model.bonuses
-                    , score = model.score + 1
-                }
-
-            else
-                { model
-                    | snake = newHead :: List.take (List.length model.snake - 1) model.snake
-                }
+            model
+                |> snakeEatsBonus newHead
     in
     if snakeIsAlive newModel.snake then
         { newModel
@@ -172,10 +183,14 @@ keyboardConfig =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
+subscriptions model =
+    let
+        config =
+            model.config
+    in
     Sub.batch
         [ subscription keyboardConfig
-        , Time.every 200 TimeTick
+        , Time.every config.speed TimeTick
         ]
 
 

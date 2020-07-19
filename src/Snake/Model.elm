@@ -23,6 +23,7 @@ type alias Model =
 
 type alias Config =
     { mapSize : Int
+    , speed : Float
     }
 
 
