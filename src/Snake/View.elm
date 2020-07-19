@@ -6,6 +6,7 @@ import Html.Events exposing (..)
 import Snake.Cell exposing (Cell, sameCell)
 import Snake.Direction exposing (Direction(..))
 import Snake.Model exposing (Model, Msg(..), Status(..))
+import Snake.Snake exposing (snakeHead)
 
 
 drawCols : Model -> List (Html Msg)
@@ -39,7 +40,8 @@ drawCell model cell =
             List.member cell model.snake
 
         isHead =
-            sameCell cell (model.snake |> List.head |> Maybe.withDefault { x = 1, y = 1 })
+            snakeHead model.snake
+                |> sameCell cell
 
         isBonus =
             List.member cell model.bonuses

@@ -1,20 +1,13 @@
 module Snake.Main exposing (init, main, update)
 
 import Browser
-import Snake.Cell exposing (Cell)
 import Snake.Direction exposing (Direction(..), changeDirection)
 import Snake.GamePlay exposing (play, spawnNewBonus)
 import Snake.Keyboard exposing (KeyboardConfig, subscription)
 import Snake.Model exposing (Model, Msg(..), Status(..))
+import Snake.Snake exposing (initSnake)
 import Snake.View exposing (view)
 import Time
-
-
-initSnake : Int -> List Cell
-initSnake size =
-    List.range 1 size
-        |> List.map (\x -> { x = x, y = 1 })
-        |> List.reverse
 
 
 init : () -> ( Model, Cmd Msg )
