@@ -15,7 +15,7 @@ type alias Model =
     , snake : List Cell
     , direction : Direction
     , status : Status
-    , timePeriod : Int
+    , timeLapses : Int
     , bonuses : List Cell
     , score : Int
     }

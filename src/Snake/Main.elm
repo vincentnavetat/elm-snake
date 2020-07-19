@@ -27,7 +27,7 @@ init _ =
       , snake = initSnake 10
       , direction = Right
       , status = OnGoing
-      , timePeriod = 0
+      , timeLapses = 0
       , bonuses = []
       , score = 0
       }

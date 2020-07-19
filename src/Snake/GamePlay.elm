@@ -83,13 +83,13 @@ newBonusCmd model =
     Random.generate NewBonus (cellGenerator config.mapSize)
 
 
-generateNewBonuses : Model -> ( Cmd Msg, Int )
+generateNewBonuses : Model -> Cmd Msg
 generateNewBonuses model =
-    if model.timePeriod == 20 then
-        ( newBonusCmd model, 0 )
+    if modBy 20 model.timeLapses == 0 then
+        newBonusCmd model
 
     else
-        ( Cmd.none, model.timePeriod + 1 )
+        Cmd.none
 
 
 moveSnake : Model -> Model
@@ -124,11 +124,11 @@ play model =
                 newModel =
                     model |> moveSnake
 
-                ( cmd, newTimePeriod ) =
+                cmd =
                     generateNewBonuses model
             in
             ( { newModel
-                | timePeriod = newTimePeriod
+                | timeLapses = model.timeLapses + 1
               }
             , cmd
             )
