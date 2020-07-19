@@ -1,4 +1,4 @@
-module Snake.Model exposing (Model, Msg(..), Status(..))
+module Snake.Model exposing (Item, ItemType(..), Model, Msg(..), Status(..))
 
 import Snake.Cell exposing (Cell)
 import Snake.Direction exposing (Direction(..))
@@ -10,13 +10,24 @@ type Status
     | GameOver
 
 
+type ItemType
+    = Bonus
+    | Penalty
+
+
+type alias Item =
+    { cell : Cell
+    , type_ : ItemType
+    }
+
+
 type alias Model =
     { config : Config
     , snake : List Cell
     , direction : Direction
     , status : Status
     , timeLapses : Int
-    , bonuses : List Cell
+    , items : List Item
     , score : Int
     }
 
@@ -24,13 +35,13 @@ type alias Model =
 type alias Config =
     { mapSize : Int
     , speed : Float
-    , maxNumberOfBonuses : Int
+    , maxNumberOfItems : Int
     }
 
 
 type Msg
     = TimeTick Time.Posix
     | ChangeDirection Direction
-    | NewBonus ( Int, Int )
+    | NewItem ( Int, Int )
     | Restart
     | NoOp

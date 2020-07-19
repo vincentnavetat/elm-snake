@@ -1,39 +1,53 @@
-module Snake.GamePlay exposing (play, spawnNewBonus)
+module Snake.GamePlay exposing (play, spawnNewItem)
 
 import List.Extra exposing (remove)
 import Random
 import Snake.Cell exposing (Cell, sameCell)
-import Snake.Model exposing (Model, Msg(..), Status(..))
+import Snake.Model exposing (ItemType(..), Model, Msg(..), Status(..))
 import Snake.Movement exposing (moveCell)
 import Snake.Snake exposing (snakeIsAlive)
 
 
-spawnNewBonus : Model -> Cell -> ( Model, Cmd Msg )
-spawnNewBonus model bonus =
+spawnNewItem : Model -> Cell -> ( Model, Cmd Msg )
+spawnNewItem model cell =
     let
         config =
             model.config
 
-        bonusIsNotOnSnake =
-            List.all (\c -> sameCell c bonus /= True) model.snake
+        newItem =
+            { cell = cell, type_ = Bonus }
+
+        itemIsNotOnSnake =
+            List.all (\c -> sameCell c newItem.cell /= True) model.snake
     in
-    if bonusIsNotOnSnake then
-        ( { model | bonuses = bonus :: model.bonuses |> List.take config.maxNumberOfBonuses }, Cmd.none )
+    if itemIsNotOnSnake then
+        ( { model | items = newItem :: model.items |> List.take config.maxNumberOfItems }, Cmd.none )
 
     else
-        ( model, newBonusCmd model )
+        ( model, newItemCmd model )
 
 
-snakeEatsBonus : Cell -> Model -> Model
-snakeEatsBonus newHead model =
+snakeEatsItem : Cell -> Model -> Model
+snakeEatsItem newHead model =
     let
         config =
             model.config
+
+        eatenItem =
+            List.Extra.find (\c -> sameCell c.cell newHead) model.items
+
+        newItems =
+            case eatenItem of
+                Just b ->
+                    List.Extra.remove b model.items
+
+                Nothing ->
+                    model.items
     in
-    if List.any (\c -> sameCell c newHead) model.bonuses then
+    if List.any (\c -> sameCell c.cell newHead) model.items then
         { model
             | snake = newHead :: model.snake
-            , bonuses = List.Extra.remove newHead model.bonuses
+            , items = newItems
             , score = model.score + 1
             , config = { config | speed = config.speed - 10 }
         }
@@ -49,19 +63,19 @@ cellGenerator mapSize =
     Random.pair (Random.int 1 mapSize) (Random.int 1 mapSize)
 
 
-newBonusCmd : Model -> Cmd Msg
-newBonusCmd model =
+newItemCmd : Model -> Cmd Msg
+newItemCmd model =
     let
         config =
             model.config
     in
-    Random.generate NewBonus (cellGenerator config.mapSize)
+    Random.generate NewItem (cellGenerator config.mapSize)
 
 
-generateNewBonuses : Model -> Cmd Msg
-generateNewBonuses model =
+generateNewItems : Model -> Cmd Msg
+generateNewItems model =
     if modBy 20 model.timeLapses == 0 then
-        newBonusCmd model
+        newItemCmd model
 
     else
         Cmd.none
@@ -80,7 +94,7 @@ moveSnake model =
 
         newModel =
             model
-                |> snakeEatsBonus newHead
+                |> snakeEatsItem newHead
     in
     if snakeIsAlive newModel.snake then
         { newModel
@@ -102,7 +116,7 @@ play model =
             ( { newModel
                 | timeLapses = model.timeLapses + 1
               }
-            , generateNewBonuses model
+            , generateNewItems model
             )
 
         GameOver ->

@@ -2,9 +2,9 @@ module Snake.Main exposing (init, main, update)
 
 import Browser
 import Snake.Direction exposing (Direction(..), changeDirection)
-import Snake.GamePlay exposing (play, spawnNewBonus)
+import Snake.GamePlay exposing (play, spawnNewItem)
 import Snake.Keyboard exposing (KeyboardConfig, subscription)
-import Snake.Model exposing (Model, Msg(..), Status(..))
+import Snake.Model exposing (ItemType(..), Model, Msg(..), Status(..))
 import Snake.Snake exposing (initSnake)
 import Snake.View exposing (view)
 import Time
@@ -15,13 +15,13 @@ init _ =
     ( { config =
             { mapSize = 20
             , speed = 200
-            , maxNumberOfBonuses = 3
+            , maxNumberOfItems = 3
             }
       , snake = initSnake 10
       , direction = Right
       , status = OnGoing
       , timeLapses = 0
-      , bonuses = []
+      , items = []
       , score = 0
       }
     , Cmd.none
@@ -37,8 +37,8 @@ update message model =
         ChangeDirection direction ->
             ( { model | direction = model.direction |> changeDirection direction }, Cmd.none )
 
-        NewBonus ( x, y ) ->
-            spawnNewBonus model { x = x, y = y }
+        NewItem ( x, y ) ->
+            spawnNewItem model { x = x, y = y }
 
         Restart ->
             init ()

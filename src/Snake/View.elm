@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Snake.Cell exposing (Cell, sameCell)
 import Snake.Direction exposing (Direction(..))
-import Snake.Model exposing (Model, Msg(..), Status(..))
+import Snake.Model exposing (ItemType(..), Model, Msg(..), Status(..))
 import Snake.Snake exposing (snakeHead)
 
 
@@ -44,7 +44,7 @@ drawCell model cell =
                 |> sameCell cell
 
         isBonus =
-            List.member cell model.bonuses
+            List.member { cell = cell, type_ = Bonus } model.items
     in
     div
         [ class "cell"
