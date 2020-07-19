@@ -80,7 +80,6 @@ view model =
     node "main"
         [ class "game" ]
         [ div [ class "map" ]
-            (drawCols model)
-        , viewGameStatus model.status
+            (drawCols model ++ [ viewGameStatus model.status ])
         , viewScore model.score
         ]
