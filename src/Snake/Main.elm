@@ -3,9 +3,10 @@ module Snake.Main exposing (init, main, update)
 import Browser
 import List.Extra exposing (remove)
 import Random
+import Snake.Cell exposing (Cell, sameCell)
 import Snake.Direction exposing (Direction(..), oppositeDirections)
 import Snake.Keyboard exposing (KeyboardConfig, subscription)
-import Snake.Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
+import Snake.Model exposing (Model, Msg(..), Status(..))
 import Snake.Movement exposing (moveCell)
 import Snake.View exposing (view)
 import Time
@@ -20,7 +21,8 @@ initSnake size =
 
 init : Int -> ( Model, Cmd Msg )
 init _ =
-    ( { snake = initSnake 10
+    ( { config = { mapSize = 20 }
+      , snake = initSnake 10
       , direction = Right
       , status = OnGoing
       , timePeriod = 0
@@ -60,10 +62,13 @@ snakeIsAlive snake =
 moveSnake : Model -> Model
 moveSnake model =
     let
+        config =
+            model.config
+
         newHead =
             List.head model.snake
                 |> Maybe.withDefault { x = 1, y = 1 }
-                |> moveCell model.direction
+                |> moveCell model.direction config.mapSize
 
         newModel =
             if List.any (\c -> sameCell c newHead) model.bonuses then
@@ -96,15 +101,19 @@ changeDirection model direction =
         ( { model | direction = direction }, Cmd.none )
 
 
-cellGenerator : Random.Generator ( Int, Int )
-cellGenerator =
+cellGenerator : Int -> Random.Generator ( Int, Int )
+cellGenerator mapSize =
     Random.pair (Random.int 1 mapSize) (Random.int 1 mapSize)
 
 
 generateNewBonuses : Model -> ( Cmd Msg, Int )
 generateNewBonuses model =
+    let
+        config =
+            model.config
+    in
     if model.timePeriod == 20 then
-        ( Random.generate NewBonus cellGenerator, 0 )
+        ( Random.generate NewBonus (cellGenerator config.mapSize), 0 )
 
     else
         ( Cmd.none, model.timePeriod + 1 )

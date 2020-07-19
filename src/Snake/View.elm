@@ -2,21 +2,29 @@ module Snake.View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Snake.Cell exposing (Cell, sameCell)
 import Snake.Direction exposing (Direction(..))
-import Snake.Model exposing (Cell, Model, Msg(..), Status(..), mapSize, sameCell)
+import Snake.Model exposing (Model, Msg(..), Status(..))
 
 
 drawCols : Model -> List (Html Msg)
 drawCols model =
-    List.range 1 mapSize
+    let
+        config =
+            model.config
+    in
+    List.range 1 config.mapSize
         |> List.map (drawRow model)
 
 
 drawRow : Model -> Int -> Html Msg
 drawRow model y =
     let
+        config =
+            model.config
+
         row =
-            List.range 1 mapSize
+            List.range 1 config.mapSize
                 |> List.map (\x -> drawCell model { x = x, y = y })
     in
     div [ class "row" ]

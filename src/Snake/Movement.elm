@@ -1,11 +1,11 @@
 module Snake.Movement exposing (moveCell)
 
+import Snake.Cell exposing (Cell)
 import Snake.Direction exposing (Direction(..))
-import Snake.Model exposing (Cell, mapSize)
 
 
-moveUp : Cell -> Cell
-moveUp c =
+moveUp : Int -> Cell -> Cell
+moveUp mapSize c =
     if c.y <= 1 then
         { c | y = mapSize }
 
@@ -13,8 +13,8 @@ moveUp c =
         { c | y = c.y - 1 }
 
 
-moveDown : Cell -> Cell
-moveDown c =
+moveDown : Int -> Cell -> Cell
+moveDown mapSize c =
     if c.y >= mapSize then
         { c | y = 1 }
 
@@ -22,8 +22,8 @@ moveDown c =
         { c | y = c.y + 1 }
 
 
-moveLeft : Cell -> Cell
-moveLeft c =
+moveLeft : Int -> Cell -> Cell
+moveLeft mapSize c =
     if c.x <= 1 then
         { c | x = mapSize }
 
@@ -31,8 +31,8 @@ moveLeft c =
         { c | x = c.x - 1 }
 
 
-moveRight : Cell -> Cell
-moveRight c =
+moveRight : Int -> Cell -> Cell
+moveRight mapSize c =
     if c.x >= mapSize then
         { c | x = 1 }
 
@@ -40,17 +40,17 @@ moveRight c =
         { c | x = c.x + 1 }
 
 
-moveCell : Direction -> Cell -> Cell
-moveCell direction c =
+moveCell : Direction -> Int -> Cell -> Cell
+moveCell direction mapSize c =
     case direction of
         Up ->
-            c |> moveUp
+            c |> moveUp mapSize
 
         Right ->
-            c |> moveRight
+            c |> moveRight mapSize
 
         Down ->
-            c |> moveDown
+            c |> moveDown mapSize
 
         Left ->
-            c |> moveLeft
+            c |> moveLeft mapSize
