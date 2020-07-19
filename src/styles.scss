@@ -13,7 +13,7 @@ body {
   flex-direction: column;
 }
 
-.game__status-wrapper {
+.game-status {
   position: absolute;
   height: 100%;
   width: 100%;
@@ -22,10 +22,21 @@ body {
   align-items: center;
 }
 
-.game__status {
+.game-status__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: wheat;
-  padding: 2px 5px;
+  padding: 5px 10px;
   font-size: 30px;
+}
+
+.game-status__cta {
+  margin-top: 5px;
+}
+
+.btn {
+  font-size: 25px;
 }
 
 .game__score {

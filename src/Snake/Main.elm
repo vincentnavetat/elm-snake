@@ -17,7 +17,7 @@ initSnake size =
         |> List.reverse
 
 
-init : Int -> ( Model, Cmd Msg )
+init : () -> ( Model, Cmd Msg )
 init _ =
     ( { config =
             { mapSize = 20
@@ -47,6 +47,9 @@ update message model =
         NewBonus ( x, y ) ->
             spawnNewBonus model { x = x, y = y }
 
+        Restart ->
+            init ()
+
         NoOp ->
             ( model, Cmd.none )
 
@@ -73,7 +76,7 @@ subscriptions model =
         ]
 
 
-main : Program Int Model Msg
+main : Program () Model Msg
 main =
     Browser.document
         { init = init

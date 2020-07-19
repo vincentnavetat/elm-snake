@@ -2,6 +2,7 @@ module Snake.View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Snake.Cell exposing (Cell, sameCell)
 import Snake.Direction exposing (Direction(..))
 import Snake.Model exposing (Model, Msg(..), Status(..))
@@ -57,8 +58,16 @@ drawCell model cell =
 viewGameStatus : Status -> Html Msg
 viewGameStatus s =
     if s == GameOver then
-        div [ class "game__status-wrapper" ]
-            [ div [ class "game__status" ] [ text "Game over looooser!" ]
+        div [ class "game-status" ]
+            [ div [ class "game-status__content" ]
+                [ div []
+                    [ text "Game over, "
+                    , strong [] [ text "looooser!" ]
+                    ]
+                , div [ class "game-status__cta" ]
+                    [ button [ class "btn", onClick Restart ] [ text "Play again" ]
+                    ]
+                ]
             ]
 
     else

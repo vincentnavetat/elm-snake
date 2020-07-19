@@ -32,4 +32,5 @@ type Msg
     = TimeTick Time.Posix
     | ChangeDirection Direction
     | NewBonus ( Int, Int )
+    | Restart
     | NoOp
