@@ -24,6 +24,7 @@ type alias Model =
 type alias Config =
     { mapSize : Int
     , speed : Float
+    , maxNumberOfBonuses : Int
     }
 
 

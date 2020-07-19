@@ -21,7 +21,11 @@ initSnake size =
 
 init : Int -> ( Model, Cmd Msg )
 init _ =
-    ( { config = { mapSize = 20, speed = 200 }
+    ( { config =
+            { mapSize = 20
+            , speed = 200
+            , maxNumberOfBonuses = 3
+            }
       , snake = initSnake 10
       , direction = Right
       , status = OnGoing
@@ -153,7 +157,11 @@ play model =
 
 spawnNewBonus : Model -> Cell -> ( Model, Cmd Msg )
 spawnNewBonus model c =
-    ( { model | bonuses = c :: model.bonuses |> List.take 3 }, Cmd.none )
+    let
+        config =
+            model.config
+    in
+    ( { model | bonuses = c :: model.bonuses |> List.take config.maxNumberOfBonuses }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
