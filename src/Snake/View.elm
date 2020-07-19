@@ -3,6 +3,7 @@ module Snake.View exposing (view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import List.Extra exposing (find)
 import Snake.Cell exposing (Cell, sameCell)
 import Snake.Direction exposing (Direction(..))
 import Snake.Model exposing (ItemType(..), Model, Msg(..), Status(..))
@@ -43,8 +44,21 @@ drawCell model cell =
             snakeHead model.snake
                 |> sameCell cell
 
-        isBonus =
-            List.member { cell = cell, type_ = Bonus } model.items
+        itemOnCell =
+            find (\c -> sameCell c.cell cell) model.items
+
+        ( isBonus, isPenalty ) =
+            case itemOnCell of
+                Just i ->
+                    case i.type_ of
+                        Bonus ->
+                            ( True, False )
+
+                        Penalty ->
+                            ( False, True )
+
+                Nothing ->
+                    ( False, False )
     in
     div
         [ class "cell"
@@ -52,6 +66,7 @@ drawCell model cell =
             [ ( "cell--snake", isSnake )
             , ( "cell--snake-head", isHead )
             , ( "cell--bonus", isBonus )
+            , ( "cell--penalty", isPenalty )
             ]
         ]
         []

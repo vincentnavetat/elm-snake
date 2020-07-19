@@ -1,6 +1,6 @@
 module Snake.GamePlay exposing (play, spawnNewItem)
 
-import List.Extra exposing (remove)
+import List.Extra exposing (find, remove)
 import Random
 import Snake.Cell exposing (Cell, sameCell)
 import Snake.Model exposing (ItemType(..), Model, Msg(..), Status(..))
@@ -14,8 +14,15 @@ spawnNewItem model cell =
         config =
             model.config
 
+        newType =
+            if modBy 2 cell.x == 0 then
+                Penalty
+
+            else
+                Bonus
+
         newItem =
-            { cell = cell, type_ = Bonus }
+            { cell = cell, type_ = newType }
 
         itemIsNotOnSnake =
             List.all (\c -> sameCell c newItem.cell /= True) model.snake
@@ -30,16 +37,13 @@ spawnNewItem model cell =
 snakeEatsItem : Cell -> Model -> Model
 snakeEatsItem newHead model =
     let
-        config =
-            model.config
-
         eatenItem =
-            List.Extra.find (\c -> sameCell c.cell newHead) model.items
+            find (\c -> sameCell c.cell newHead) model.items
 
         newItems =
             case eatenItem of
                 Just b ->
-                    List.Extra.remove b model.items
+                    remove b model.items
 
                 Nothing ->
                     model.items
@@ -49,7 +53,6 @@ snakeEatsItem newHead model =
             | snake = newHead :: model.snake
             , items = newItems
             , score = model.score + 1
-            , config = { config | speed = config.speed - 10 }
         }
 
     else
@@ -72,8 +75,8 @@ newItemCmd model =
     Random.generate NewItem (cellGenerator config.mapSize)
 
 
-generateNewItems : Model -> Cmd Msg
-generateNewItems model =
+generateNewItem : Model -> Cmd Msg
+generateNewItem model =
     if modBy 20 model.timeLapses == 0 then
         newItemCmd model
 
@@ -105,18 +108,33 @@ moveSnake model =
         { model | status = GameOver }
 
 
+increaseSpeed : Model -> Model
+increaseSpeed model =
+    let
+        config =
+            model.config
+    in
+    if modBy 50 model.timeLapses == 0 then
+        { model | config = { config | speed = config.speed - 10 } }
+
+    else
+        model
+
+
 play : Model -> ( Model, Cmd Msg )
 play model =
     case model.status of
         OnGoing ->
             let
                 newModel =
-                    model |> moveSnake
+                    model
+                        |> moveSnake
+                        |> increaseSpeed
             in
             ( { newModel
                 | timeLapses = model.timeLapses + 1
               }
-            , generateNewItems model
+            , generateNewItem model
             )
 
         GameOver ->
