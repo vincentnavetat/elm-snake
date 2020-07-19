@@ -123,14 +123,11 @@ play model =
             let
                 newModel =
                     model |> moveSnake
-
-                cmd =
-                    generateNewBonuses model
             in
             ( { newModel
                 | timeLapses = model.timeLapses + 1
               }
-            , cmd
+            , generateNewBonuses model
             )
 
         GameOver ->
