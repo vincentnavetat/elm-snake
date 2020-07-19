@@ -11,5 +11,6 @@ Little game of Snake made with Elm.
 * ~~Add restart button on game over~~
 * ~~Handle positive/negative items~~
 * Add difficulty levels
+* Improve graphics (head towards direction, tail, etc)
 * Nicer scoring system
 * Make penalties alter gameplay (reverse controls, etc)
